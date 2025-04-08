@@ -19,7 +19,7 @@
 
 ## 📸 Demo Preview
 
-![Gemini Chat Demo]("./demo(1).mp4")
+![Gemini Chat Demo]("demo(1).mp4")
 
 ---
 
