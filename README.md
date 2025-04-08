@@ -19,7 +19,8 @@
 
 ## 📸 Demo Preview
 
-![Gemini Chat Demo]("demo(1).mp4")
+![Gemini Chat Demo](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZHR1eW53OHF4Z2Z0aW9rbjY4amFqZ3dnazN1ejlhczVxc2w2bGU3MiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/5xtDarzqClzZ2fLgvPq/giphy.gif)
+
 
 ---
 
