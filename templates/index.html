@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemini Chatbot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f9;
+    }
+
+    .chat-container {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 500px;
+      overflow: hidden;
+      height: inherit;
+    }
+
+    .chat-header {
+      padding: 20px;
+      background-color: #007bff;
+      color: white;
+    }
+
+    .chat-header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .chat-header p {
+      margin: 5px 0 0;
+      font-size: 14px;
+    }
+
+    .chat-box {
+      padding: 20px;
+      height: 400px;
+      overflow-y: auto;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .message {
+      margin-bottom: 15px;
+    }
+
+    .message.user {
+      text-align: right;
+    }
+
+    .message.bot {
+      text-align: left;
+    }
+
+    .message p {
+      display: inline-block;
+      padding: 10px;
+      border-radius: 8px;
+      max-width: 80%;
+      margin: 0;
+    }
+
+    .message.user p {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .message.bot p {
+      background-color: #e9ecef;
+      color: black;
+    }
+
+    .code-snippet {
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: "Courier New", monospace;
+      white-space: pre-wrap;
+      margin: 10px 0;
+    }
+
+    .input-container {
+      display: flex;
+      padding: 10px;
+      background-color: #f8f9fa;
+      position: absolute;
+      bottom: 0;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <h1>Hi,</h1>
+      <p>How can I assist you today?</p>
+    </div>
+    <div class="chat-box" id="chat-box">
+      <!-- Chat messages will appear here -->
+    </div>
+    <div class="input-container">
+      <input type="text" id="user-input" placeholder="Type your message...">
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('send-btn').addEventListener('click', sendMessage);
+    document.getElementById('user-input').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
+    function sendMessage() {
+      const userInput = document.getElementById('user-input').value;
+      if (!userInput.trim()) return;
+
+      // Display user's message
+      appendMessage('user', userInput);
+      document.getElementById('user-input').value = '';
+
+      // Send message to backend
+      fetch('http://127.0.0.1:5000/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: userInput }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // Display bot's response
+          appendMessage('bot', data.response || data.error);
+        })
+        .catch((error) => {
+          appendMessage('bot', 'Error: Failed to fetch response.');
+        });
+    }
+
+    function appendMessage(sender, message) {
+      const chatBox = document.getElementById('chat-box');
+      const messageElement = document.createElement('div');
+      messageElement.classList.add('message', sender);
+
+      // Check if the message contains code snippets
+      if (message.includes("```")) {
+        const parts = message.split("```");
+        let formattedMessage = '';
+        for (let i = 0; i < parts.length; i++) {
+          if (i % 2 === 0) {
+            formattedMessage += `<p>${parts[i]}</p>`;
+          } else {
+            formattedMessage += `<div class="code-snippet">${parts[i]}</div>`;
+          }
+        }
+        messageElement.innerHTML = formattedMessage;
+      } else {
+        messageElement.innerHTML = `<p>${message}</p>`;
+      }
+
+      chatBox.appendChild(messageElement);
+      chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+    }
+  </script>
+</body>
+</html>
